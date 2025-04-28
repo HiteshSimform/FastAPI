@@ -1,1 +1,18 @@
-print("Hello World")
+# print("Hello World")
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool=None
+
+@app.get('/')
+def read_root():
+    return {"message":"Hello World"}
+
+@app.get("/items/{item_id}")
+async def read_item(item_id):
+    return {"item_id": item_id}
