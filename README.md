@@ -293,3 +293,7 @@ def register_user(data: RegisterRequest):
 ```
 
 ---
+
+- return type and response model difference
+- migration in fastapi
+- 
