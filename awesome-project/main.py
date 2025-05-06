@@ -92,7 +92,9 @@ app = FastAPI()
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import crud, models, schemas, database
+
 models.Base.metadata.create_all(bind=database.engine)
+
 
 def get_db():
     db = database.SessionLocal()
@@ -101,15 +103,42 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/", response_model=dict)
 def read_root():
     return {"message": "Hello World"}
 
+
+# @app.get("/items", response_model=list[schemas.Item])
+# async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     items = crud.get_items(db, skip=skip, limit=limit)
+#     return items
+
+
 @app.get("/items", response_model=list[schemas.Item])
-async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
+async def read_items(db: Session = Depends(get_db)):
+    items = crud.get_items(db)
     return items
+
+
+@app.get("/items/{item_id}", response_model=list[schemas.Item])
+async def read_items(item_id: int, db: Session = Depends(get_db)):
+    items = crud.get_items_id(item_id, db)
+    return items
+
 
 @app.post("/items", response_model=schemas.Item)
 async def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_item(db=db, item=item)
+
+
+@app.put("/items/{item_id}", response_model=schemas.Item)
+async def update_item(
+    item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)
+):
+    return crud.update_item(item_id=item_id, item=item, db=db)
+
+
+@app.delete("/items/{item_id}", response_model=dict)
+async def delete_item(item_id: int, db: Session = Depends(get_db)):
+    return crud.delete_item(item_id=item_id, db=db)
