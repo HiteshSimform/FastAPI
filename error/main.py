@@ -316,7 +316,7 @@
 # # #     user = db.query(User).filter(User.id == user_id).first()
 # # #     if user is None:
 # # #         raise HTTPException(status_code=404, detail="User not found")
-    
+
 # # #     # Here, FastAPI will try to use `UserOut` to serialize the `user` (which is a SQLAlchemy ORM object).
 # # #     # Since `orm_mode=False`, it will not know how to convert the SQLAlchemy object to a dict and will raise an error.
 # # #     return user  # This will raise an error
@@ -339,7 +339,7 @@
 # # from sqlalchemy.orm import sessionmaker, Session
 
 
-# # DATABASE_URL = "sqlite:///./test.db" 
+# # DATABASE_URL = "sqlite:///./test.db"
 
 # # engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 # # SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -378,7 +378,7 @@
 # #     email: str
 
 # #     # class Config:
-# #     #     orm_mode = True  
+# #     #     orm_mode = True
 
 # # class UserCreate(BaseModel):
 # #     name: str
@@ -393,7 +393,7 @@
 # #     user = db.query(User).filter(User.id == user_id).first()
 # #     if user is None:
 # #         raise HTTPException(status_code=404, detail="User not found")
-# #     return user  
+# #     return user
 
 # # @app.post("/users/", response_model=UserOut)
 # # async def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -401,7 +401,7 @@
 # #     db.add(db_user)
 # #     db.commit()
 # #     db.refresh(db_user)
-# #     return db_user 
+# #     return db_user
 
 
 # from fastapi import FastAPI, Depends, HTTPException
@@ -420,7 +420,7 @@
 # # SQLAlchemy Model
 # class User(Base):
 #     __tablename__ = 'users'
-    
+
 #     id = Column(Integer, primary_key=True, index=True)
 #     name = Column(String, index=True)
 #     email = Column(String, unique=True, index=True)
@@ -458,7 +458,7 @@
 #     user = db.query(User).filter(User.id == user_id).first()
 #     if user is None:
 #         raise HTTPException(status_code=404, detail="User not found")
-    
+
 #     # Manually convert SQLAlchemy object to dictionary
 #     # return {"id": user.id, "name": user.name, "email": user.email}
 #     return user
@@ -469,7 +469,7 @@
 #     db.add(db_user)
 #     db.commit()
 #     db.refresh(db_user)
-    
+
 #     # Manually convert SQLAlchemy object to dictionary
 #     # return {"id": db_user.id, "name": db_user.name, "email": db_user.email}
 #     return db_user
@@ -491,7 +491,7 @@
 # # SQLAlchemy Model
 # class User(Base):
 #     __tablename__ = 'users'
-    
+
 #     id = Column(Integer, primary_key=True, index=True)
 #     name = Column(String, index=True)
 #     email = Column(String, unique=True, index=True)
@@ -530,19 +530,19 @@
 #     user = db.query(User).filter(User.id == user_id).first()
 #     if user is None:
 #         raise HTTPException(status_code=404, detail="User not found")
-    
+
 #     # Manually convert SQLAlchemy object to dictionary
 #     return user
 
 # @app.post("/users/")
 # async def create_user(user: UserCreate, db: Session = Depends(get_db)):
 #     print(f"Type of user before DB insert: {type(user)}")  # Debugging output
-    
+
 #     # Convert Pydantic model to SQLAlchemy ORM model
 #     db_user = User(name=user.name, email=user.email)
-    
+
 #     print(f"Type of db_user after conversion: {type(db_user)}")  # Debugging output
-    
+
 #     db.add(db_user)
 #     db.commit()
 #     db.refresh(db_user)
@@ -631,6 +631,7 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 # -------------------- SQLAlchemy Model --------------------
 class User(Base):
     __tablename__ = "users"
@@ -639,14 +640,17 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     phone = Column(String, nullable=True)
 
+
 # Create DB Table
 Base.metadata.create_all(bind=engine)
+
 
 # -------------------- Pydantic Models --------------------
 class UserCreate(BaseModel):
     name: str
     email: str
     phone: str
+
 
 class UserOut(BaseModel):
     id: int
@@ -659,8 +663,10 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
+
 # -------------------- FastAPI App --------------------
 app = FastAPI()
+
 
 # Dependency
 def get_db():
@@ -670,6 +676,7 @@ def get_db():
     finally:
         db.close()
 
+
 # Create User
 @app.post("/users/", response_model=UserOut)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -678,6 +685,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user  # ⛔ This will now fail
+
 
 # Get User
 @app.get("/users/{user_id}", response_model=UserOut)

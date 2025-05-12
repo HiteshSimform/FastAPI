@@ -1,5 +1,6 @@
 from models import create_table
 from services import *
+
 # create_table()
 
 # Insert Data
